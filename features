@@ -1,0 +1,287 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Task
+{
+    public string Description { get; set; }
+    public bool IsCompleted { get; set; }
+    public int Priority { get; set; }
+    public DateTime DueDate { get; set; }
+}
+
+class Program
+{
+    static List<Task> tasks = new List<Task>();
+
+    static void Main(string[] args)
+    {
+        bool exit = false;
+
+        while (!exit)
+        {
+            Console.WriteLine("Task Management System");
+            Console.WriteLine("1. Display Tasks");
+            Console.WriteLine("2. Add a Task");
+            Console.WriteLine("3. Mark Task as Completed");
+            Console.WriteLine("4. Set Task Priority");
+            Console.WriteLine("5. Remove a Task");
+            Console.WriteLine("6. Sort Tasks");
+            Console.WriteLine("7. Filter Tasks");
+            Console.WriteLine("8. Edit a Task");
+            Console.WriteLine("9. Exit");
+            Console.Write("Enter your choice: ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    DisplayTasks();
+                    break;
+                case "2":
+                    AddTask();
+                    break;
+                case "3":
+                    MarkTaskAsCompleted();
+                    break;
+                case "4":
+                    SetTaskPriority();
+                    break;
+                case "5":
+                    RemoveTask();
+                    break;
+                case "6":
+                    SortTasks();
+                    break;
+                case "7":
+                    FilterTasks();
+                    break;
+                case "8":
+                    EditTask();
+                    break;
+                case "9":
+                    exit = true;
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
+
+            Console.WriteLine();
+        }
+    }
+
+    static void DisplayTasks()
+    {
+        Console.WriteLine("Tasks:");
+
+        if (tasks.Count == 0)
+        {
+            Console.WriteLine("No tasks found.");
+        }
+        else
+        {
+            for (int i = 0; i < tasks.Count; i++)
+            {
+                Task task = tasks[i];
+                string status = task.IsCompleted ? "Completed" : "Incomplete";
+                Console.WriteLine($"{i + 1}. [{status}] {task.Description} (Priority: {task.Priority}, Due Date: {task.DueDate.ToShortDateString()})");
+            }
+        }
+    }
+
+    static void AddTask()
+    {
+        Console.Write("Enter task description: ");
+        string description = Console.ReadLine();
+
+        Console.Write("Enter task priority (1-5): ");
+        int priority = int.Parse(Console.ReadLine());
+
+        Console.Write("Enter due date (yyyy-MM-dd): ");
+        DateTime dueDate = DateTime.Parse(Console.ReadLine());
+
+        Task task = new Task
+        {
+            Description = description,
+            IsCompleted = false,
+            Priority = priority,
+            DueDate = dueDate
+        };
+
+        tasks.Add(task);
+        Console.WriteLine("Task added successfully.");
+    }
+
+    static void MarkTaskAsCompleted()
+    {
+        Console.Write("Enter the task number to mark as completed: ");
+        int taskNumber = int.Parse(Console.ReadLine());
+
+        if (taskNumber >= 1 && taskNumber <= tasks.Count)
+        {
+            Task task = tasks[taskNumber - 1];
+            task.IsCompleted = true;
+            Console.WriteLine("Task marked as completed.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid task number.");
+        }
+    }
+
+    static void SetTaskPriority()
+    {
+        Console.Write("Enter the task number to set priority: ");
+        int taskNumber = int.Parse(Console.ReadLine());
+
+        if (taskNumber >= 1 && taskNumber <= tasks.Count)
+        {
+            Console.Write("Enter the new priority (1-5): ");
+            int priority = int.Parse(Console.ReadLine());
+
+            Task task = tasks[taskNumber - 1];
+            task.Priority = priority;
+            Console.WriteLine("Task priority updated.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid task number.");
+        }
+    }
+
+    static void RemoveTask()
+    {
+        Console.Write("Enter the task number to remove: ");
+        int taskNumber = int.Parse(Console.ReadLine());
+
+        if (taskNumber >= 1 && taskNumber <= tasks.Count)
+        {
+            tasks.RemoveAt(taskNumber - 1);
+            Console.WriteLine("Task removed successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid task number.");
+        }
+    }
+
+    static void SortTasks()
+    {
+        Console.WriteLine("Sort tasks by:");
+        Console.WriteLine("1. Priority");
+        Console.WriteLine("2. Due Date");
+        Console.WriteLine("3. Completion Status");
+        Console.Write("Enter your choice: ");
+
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                tasks = tasks.OrderByDescending(t => t.Priority).ToList();
+                Console.WriteLine("Tasks sorted by priority.");
+                break;
+            case "2":
+                tasks = tasks.OrderBy(t => t.DueDate).ToList();
+                Console.WriteLine("Tasks sorted by due date.");
+                break;
+            case "3":
+                tasks = tasks.OrderBy(t => t.IsCompleted).ToList();
+                Console.WriteLine("Tasks sorted by completion status.");
+                break;
+            default:
+                Console.WriteLine("Invalid choice.");
+                break;
+        }
+    }
+
+    static void FilterTasks()
+    {
+        Console.WriteLine("Filter tasks by:");
+        Console.WriteLine("1. Completed Tasks");
+        Console.WriteLine("2. Incomplete Tasks");
+        Console.WriteLine("3. Priority Level");
+        Console.Write("Enter your choice: ");
+
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                DisplayFilteredTasks(tasks.Where(t => t.IsCompleted).ToList());
+                break;
+            case "2":
+                DisplayFilteredTasks(tasks.Where(t => !t.IsCompleted).ToList());
+                break;
+            case "3":
+                Console.Write("Enter the priority level (1-5): ");
+                int priority = int.Parse(Console.ReadLine());
+                DisplayFilteredTasks(tasks.Where(t => t.Priority == priority).ToList());
+                break;
+            default:
+                Console.WriteLine("Invalid choice.");
+                break;
+        }
+    }
+
+    static void DisplayFilteredTasks(List<Task> filteredTasks)
+    {
+        Console.WriteLine("Filtered Tasks:");
+
+        if (filteredTasks.Count == 0)
+        {
+            Console.WriteLine("No tasks found.");
+        }
+        else
+        {
+            for (int i = 0; i < filteredTasks.Count; i++)
+            {
+                Task task = filteredTasks[i];
+                string status = task.IsCompleted ? "Completed" : "Incomplete";
+                Console.WriteLine($"{i + 1}. [{status}] {task.Description} (Priority: {task.Priority}, Due Date: {task.DueDate.ToShortDateString()})");
+            }
+        }
+    }
+
+    static void EditTask()
+    {
+        Console.Write("Enter the task number to edit: ");
+        int taskNumber = int.Parse(Console.ReadLine());
+
+        if (taskNumber >= 1 && taskNumber <= tasks.Count)
+        {
+            Task task = tasks[taskNumber - 1];
+
+            Console.WriteLine("Enter new task details (leave blank to keep existing values):");
+
+            Console.Write($"Description ({task.Description}): ");
+            string description = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                task.Description = description;
+            }
+
+            Console.Write($"Priority ({task.Priority}): ");
+            string priorityInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(priorityInput))
+            {
+                task.Priority = int.Parse(priorityInput);
+            }
+
+            Console.Write($"Due Date ({task.DueDate.ToShortDateString()}): ");
+            string dueDateInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(dueDateInput))
+            {
+                task.DueDate = DateTime.Parse(dueDateInput);
+            }
+
+            Console.WriteLine("Task updated successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid task number.");
+        }
+    }
+}
